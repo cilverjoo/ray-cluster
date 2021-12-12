@@ -1,0 +1,70 @@
+cluster_name: "ray-cluster"
+
+auth:
+    ssh_user: "deploy"
+    ssh_private_key: "~/ray_bootstrap_key.pem"
+    ssh_public_key: "~/.ssh/gsa_id_rsa.pub"
+
+upscaling_speed: 1.0
+
+idle_timeout_minutes: 5
+
+docker:
+    image: "rayproject/ray:latest-cpu"
+    container_name: "ray_container"
+    pull_before_run: False
+    run_options:
+        - --ulimit nofile=65536:65536
+
+initialization_commands:
+    - sudo usermod -aG docker $USER || true
+    - sleep 10
+    - touch ~/.sudo_as_admin_successful
+
+setup_commands:
+    - pip install -U "ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl\"" \
+
+
+head_setup_commands:
+    - pip install -U \"ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl\"
+
+worker_setup_commands:
+    - pip install -U \"ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl\"
+
+head_start_ray_commands:
+    - ray stop
+    - ulimit -c unlimited && ray start --head --port=6379 --autoscaling-config=~/ray_bootstrap_config.yaml
+
+worker_start_ray_commands:
+    - ray stop
+    - ray start --address=$RAY_HEAD_IP:6379
+
+file_mounts: []
+
+cluster_synced_files: []
+
+file_mounts_sync_continuously: False
+
+rsync_exclude:
+    - "**/.git"
+    - "**/.git/**"
+
+rsync_filter":
+    - ".gitignore"
+
+provider:
+    type: "local"
+    coordinator_address: "127.0.0.1:6379"
+
+max_workers: 2
+
+available_node_types:
+    local.cluster.node:
+        node_config: {}
+        resources: {}
+        min_workers: 0
+        max_workers: 2
+
+head_node_type: local.cluster.node
+
+no_restart: False
