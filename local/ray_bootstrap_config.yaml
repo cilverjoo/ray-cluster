@@ -22,14 +22,13 @@ initialization_commands:
     - touch ~/.sudo_as_admin_successful
 
 setup_commands:
-    - pip install -U "ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl\"" \
-
+    - pip install -U ray[default]
 
 head_setup_commands:
-    - pip install -U \"ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl\"
+    - pip install -U ray[default]
 
 worker_setup_commands:
-    - pip install -U \"ray[default] @ https://s3-us-west-2.amazonaws.com/ray-wheels/latest/ray-2.0.0.dev0-cp37-cp37m-manylinux2014_x86_64.whl\"
+    - pip install -U ray[default]
 
 head_start_ray_commands:
     - ray stop
